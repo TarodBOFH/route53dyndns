@@ -1,0 +1,2 @@
+boto3~=1.16
+get-docker-secret~=1.0.1
