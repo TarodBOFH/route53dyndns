@@ -12,10 +12,10 @@ To avoid incurring AWS cost by using the API, I have a very basic change detecti
 - If they are equal, I do not call AWS at all.
 - Every 60 cycles, I force a refresh (around every hour) by force updating `/var/lastip` with `0.0.0.0` 
   
-##Additional information:
+## Additional information:
 
-* change_ip.sh contains a couple of ways of obtaining the IP address
-* route53.py is a small python script using boto3 to update a set of given DNS records (MX, TXT, A... whatever).
+* `change_ip.sh` contains a couple of ways of obtaining the IP address
+* `route53.py` is a small python script using boto3 to update a set of given DNS records (MX, TXT, A... whatever).
 * The following dependencies are expected:
   * `change_ip.sh` (using ssh to connect to your router)
     * Environment variables
