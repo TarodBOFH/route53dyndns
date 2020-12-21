@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import sys, getopt, time, get_docker_secret, boto3, ast, os
+import sys, getopt, time, boto3, ast, os
+from get_docker_secret import get_docker_secret
 
 def main(argv):
     ip=''
@@ -21,7 +22,11 @@ def main(argv):
     spf_records = ["SPF", "TXT"]
     spf_format = "\"v=spf1 include:_spf.google.com ipv4:"+ip+" ~all\""
 
-    client = boto3.client("route53")
+    client = boto3.client(
+        "route53",
+        aws_access_key_id=get_docker_secret("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=get_docker_secret("AWS_SECRET_ACCESS_KEY"),
+    )
     for zone_id, zone_name in zones:
         print(f"Processing {zone_id} ({zone_name})")
         response = client.list_resource_record_sets(HostedZoneId=zone_id)
@@ -33,19 +38,13 @@ def main(argv):
                     if resource['Value'] != ip:
                         print(f"Updating {a_record}.{zone_name} type {record['Type']} from {resource['Value']} to {ip}")
                         resource['Value'] = ip
-                        change_request.append({
-                                    'Action': 'UPSERT',
-                                    'ResourceRecordSet': record
-                                     })
+                        change_request.append({'Action': 'UPSERT', 'ResourceRecordSet': record})
             if record['Type'] in spf_records:
                 for resource in record.get("ResourceRecords") or []:
                     if resource['Value'] != spf_format:
                         print(f"Updating {a_record}.{zone_name} type {record['Type']} from {resource['Value']} to {ip}")
                         resource['Value'] = spf_format
-                        change_request.append({
-                                    'Action': 'UPSERT',
-                                    'ResourceRecordSet': record
-                                     })
+                        change_request.append({'Action': 'UPSERT', 'ResourceRecordSet': record})
         if change_request:
             client.change_resource_record_sets(
                 HostedZoneId=zone_id,
