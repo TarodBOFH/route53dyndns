@@ -1,16 +1,16 @@
 # route53dyndns
 I am a small set of scripts to dynamically update a given domain name record on Amazon Route53 service based on the
-current IP address of the machine running the script (or another machine that accepts a remote ssh command).
+current IP address of a gateway (see my `change_ip.sh` script).
 
-It can be used as a docker container, either running 24/7 or by having `/change_ip.sh` as command.
-The docker entrypoint is a permanent loop launches `/change_ip.sh` script every minute.
-To avoid incurring AWS cost by using the API, a very basic change detection has been implemented:
-- Store last known ip from AWS on `/var/lastip` (or 0.0.0.0 to force running the script)
-- Compare router's ip with the one stored
-- If the IPs are not equal, call AWS Route 53 to update the DNS with the actual public IP
-  obtained (check `change_ip.sh`)
-- If they are equal, do not call AWS at all.
-- Every 60 cycles, force a refresh (around every hour) by force updating `/var/lastip` with `0.0.0.0` 
+I can be used as a docker container, either running 24/7 or by having `/change_ip.sh` as entrypoint or command.
+My docker entrypoint is a permanent loop that launches `/change_ip.sh` script every minute.
+To avoid incurring AWS cost by using the API, I have a very basic change detection:
+- I store last known ip from AWS on `/var/lastip` (or 0.0.0.0 to force running the script)
+- I compare the gateway's ip with the one stored
+- If the IPs are not equal, I call AWS Route 53 to update the DNS with the actual public IP
+  obtained (check `route53.py`)
+- If they are equal, I do not call AWS at all.
+- Every 60 cycles, I force a refresh (around every hour) by force updating `/var/lastip` with `0.0.0.0` 
   
 ##Additional information:
 
