@@ -5,7 +5,7 @@ current IP address of a gateway (see my `change_ip.sh` script).
 I can be used as a docker container, either running 24/7 or by having `/change_ip.sh` as entrypoint or command.
 My docker entrypoint is a permanent loop that launches `/change_ip.sh` script every minute.
 To avoid incurring AWS cost by using the API, I have a very basic change detection:
-- I store last known ip from AWS on `/var/lastip` (or 0.0.0.0 to force running the script)
+- I store last known ip from AWS on `/var/lastip` (or `0.0.0.0` to force running the script)
 - I compare the gateway's ip with the one stored
 - If the IPs are not equal, I call AWS Route 53 to update the DNS with the actual public IP
   obtained (check `route53.py`)
